@@ -1,7 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:jack_notification/src/fcmANDnotification/providers/fcm_notification_config.dart';
+import 'package:jack_notification/src/firebase_cloud_messaging/providers/fcm_notification_config.dart';
 // import 'package:jack_components/core_system/fcmANDnotification/providers/fcm_notification_provider.dart';
 
 void showFlutterNotification(RemoteMessage message) {
