@@ -26,15 +26,19 @@ class JackFCMConfig {
       await JackFCMNotificationConfig.setupFlutterNotifications();
     }
 
-    await FirebaseMessaging.instance.getToken(vapidKey: vapidKey).then(
-      (value) {
-        debugPrint("----------------------token----------------------");
-        debugPrint(value);
-        token = value;
-        // _setupToken.add(value);
-        // setupToken.addToken(value);
-      },
-    );
+    try {
+      await FirebaseMessaging.instance.getToken(vapidKey: vapidKey).then(
+        (value) {
+          debugPrint("----------------------token----------------------");
+          debugPrint(value);
+          token = value;
+          // _setupToken.add(value);
+          // setupToken.addToken(value);
+        },
+      );
+    } catch (e) {
+      rethrow;
+    }
 
     /// if u need uncomment this
     // _tokenStream = FirebaseMessaging.instance.onTokenRefresh;
