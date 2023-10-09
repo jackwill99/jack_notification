@@ -37,7 +37,8 @@ class JackFCMConfig {
         },
       );
     } catch (e) {
-      rethrow;
+      //TODO : Huawei Messaging Service
+      debugPrint("----------------------token $e----------------------");
     }
 
     /// if u need uncomment this
