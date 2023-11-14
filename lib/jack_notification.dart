@@ -1,8 +1,4 @@
+library jack_notification;
 
-import 'jack_notification_platform_interface.dart';
-
-class JackNotification {
-  Future<String?> getPlatformVersion() {
-    return JackNotificationPlatform.instance.getPlatformVersion();
-  }
-}
+export "src/cloud_messaging/providers/fcm_config.dart";
+export "src/local_notification_api/local_notification_api.dart";
