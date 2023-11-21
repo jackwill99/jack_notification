@@ -9,6 +9,7 @@ import "package:jack_notification/src/huawei_cloud_messaging/notification_config
 import "package:jack_notification/src/model/notification_config.dart";
 import "package:jack_notification/src/model/notification_message.dart";
 import "package:jack_notification/src/model/notification_service_interface.dart";
+import "package:jack_notification/src/model/remote_message_callback.dart";
 import "package:rxdart/subjects.dart";
 
 class NotificationService extends NotificationServiceInterface {
@@ -26,6 +27,8 @@ class NotificationService extends NotificationServiceInterface {
     required FirebaseOptions options,
     String? vapidKey,
   }) {
+    RemoteMessageCallBack().firebaseOptions = options;
+
     final instance = NotificationService(options: options, vapidKey: vapidKey);
     return instance;
   }
@@ -119,9 +122,9 @@ class NotificationService extends NotificationServiceInterface {
   Future<void> onMessageBackground(
     void Function(NotificationMessage message) callBack,
   ) async {
-    await _setup();
+    final gmsAvailable = await checkGmsAvailable();
 
-    if (isGmsAvailable) {
+    if (gmsAvailable) {
       await _fcmNotificationConfig.onMessageBackground(callBack);
     } else {
       await _hcmNotificationConfig.onMessageBackground(callBack);

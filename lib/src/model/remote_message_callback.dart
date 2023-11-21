@@ -1,7 +1,9 @@
+import "package:firebase_core/firebase_core.dart";
 import "package:firebase_messaging/firebase_messaging.dart" as firebase;
 import "package:huawei_push/huawei_push.dart" as huawei;
 import "package:jack_notification/jack_notification.dart";
 
+@pragma("vm:entry-point")
 class RemoteMessageCallBack {
   factory RemoteMessageCallBack() {
     return I;
@@ -10,6 +12,8 @@ class RemoteMessageCallBack {
   RemoteMessageCallBack._();
 
   static final RemoteMessageCallBack I = RemoteMessageCallBack._();
+
+  late FirebaseOptions firebaseOptions;
 
   late void Function(NotificationMessage message) hcmRemoteMessageCallback;
 
@@ -25,7 +29,9 @@ Future<void> hcmRemoteMessaging(
     title: remoteMessage.notification?.title,
     body: remoteMessage.notification?.body,
   );
-  RemoteMessageCallBack().hcmRemoteMessageCallback(message);
+  final messageCallback = RemoteMessageCallBack();
+  await Firebase.initializeApp(options: messageCallback.firebaseOptions);
+  messageCallback.hcmRemoteMessageCallback(message);
 }
 
 @pragma("vm:entry-point")
