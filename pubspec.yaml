@@ -9,17 +9,19 @@ environment:
 
 dependencies:
   # FCM
-  firebase_core: ^2.14.0
-  firebase_messaging: ^14.6.4
+  firebase_core: ^2.22.0
+  firebase_messaging: ^14.7.4
 
   flutter:
     sdk: flutter
 
   # local notification
-  flutter_local_notifications: ^14.1.1
+  flutter_local_notifications: ^16.1.0
+
   http: ^1.1.0
+  huawei_push: ^6.11.0+300
   plugin_platform_interface: ^2.0.2
-  rxdart: ^0.27.5
+  rxdart: ^0.27.7
 
 dev_dependencies:
   flutter_lints: ^2.0.0

@@ -1,6 +1,10 @@
 import 'dart:async';
+import 'dart:math';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:jack_notification/jack_notification.dart';
+import 'package:jack_notification_example/firebase_options.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +18,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  final notification = JackLocalNotificationApi();
 
   @override
   void initState() {
@@ -22,8 +26,22 @@ class _MyAppState extends State<MyApp> {
     initPlatformState();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {}
+  Future<void> initPlatformState() async {
+    final a = JackNotification(options: DefaultFirebaseOptions.currentPlatform);
+    if (await a.checkGmsAvailable()) {
+      debugPrint("----------------------initialized----------------------");
+      await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform);
+    }
+    a.onMessageListen((message) {
+      debugPrint(
+          "----------------------onmessage listen $message----------------------");
+    });
+    a.getTokenStream.listen((value) {
+      debugPrint(
+          "----------------------token ${value.$1}-------service ${value.$2}---------------");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +51,15 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Text('Running on: '),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            final random = Random().nextInt(10);
+            notification.showNotification(
+                id: random, title: "Notification", body: "test");
+          },
+          child: Icon(Icons.notifications_active),
         ),
       ),
     );

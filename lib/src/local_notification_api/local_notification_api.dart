@@ -1,3 +1,4 @@
+import "dart:async";
 import "dart:convert";
 
 import "package:flutter_local_notifications/flutter_local_notifications.dart";
@@ -5,12 +6,40 @@ import "package:http/http.dart" as http;
 import "package:rxdart/subjects.dart";
 
 class JackLocalNotificationApi {
+  JackLocalNotificationApi() {
+    unawaited(_init());
+  }
+
   final _notifications = FlutterLocalNotificationsPlugin();
   final _onNotifications = BehaviorSubject<NotificationResponse>();
   final _onKilledNotifications =
       BehaviorSubject<NotificationAppLaunchDetails>();
 
-  Future<void> init({bool initScheduled = false}) async {
+  Future<void> _channelSetup() async {
+    /// Initialize the [FlutterLocalNotificationsPlugin] package.
+    /// Create a [AndroidNotificationChannel] for heads up notifications
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      "high_importance_channel", // id
+      "High Importance Notifications", // title
+      description:
+          "This channel is used for important notifications.", // description
+      importance: Importance.max,
+    );
+
+    /// Create an Android Notification Channel.
+    ///
+    /// We use this channel in the `AndroidManifest.xml` file to override the
+    /// default FCM channel to enable heads up notifications.
+    await _notifications
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+  }
+
+  Future<void> _init({bool initScheduled = false}) async {
+    /// Create Notification Channel
+    // await _channelSetup();
+
     const android = AndroidInitializationSettings("@mipmap/ic_launcher");
     const iOS = DarwinInitializationSettings();
     const settings = InitializationSettings(android: android, iOS: iOS);
@@ -104,7 +133,7 @@ class JackLocalNotificationApi {
   }
 
   /// listening clicked LocalNotification
-  Future<void> listenNotifications(
+  Future<void> listenOpenedNotifications(
     Function(NotificationResponse value) callbackFunc,
   ) async =>
       _onNotifications.stream.listen(
@@ -114,7 +143,7 @@ class JackLocalNotificationApi {
       );
 
   /// listening clicked LocalNotification when app is killed
-  Future<void> listenKilledNotifications(
+  Future<void> listenTerminatedNotifications(
     Function(NotificationAppLaunchDetails value) callbackFunc,
   ) async =>
       _onKilledNotifications.stream.listen(

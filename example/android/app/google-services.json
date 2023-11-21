@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "811543149372",
+    "project_id": "test-notification-65bd9",
+    "storage_bucket": "test-notification-65bd9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:811543149372:android:c83344b498275deada3c39",
+        "android_client_info": {
+          "package_name": "com.jackwill.jack_notification_example"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiTqu5NEHRPlCnKDiUxVr6aRcENnt2uUM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
