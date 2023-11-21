@@ -12,38 +12,12 @@ class HCMNotificationConfig extends NotificationConfig {
     required FirebaseOptions options,
     required NotificationConfig hcmNotification,
     required BehaviorSubject<(String, NotificationServiceType)> tokeStream,
-    void Function(NotificationMessage message)? onMessageListen,
-    void Function(NotificationMessage message)? onMessageOpened,
     String? vapidKey,
   }) async {
     Push.getToken("");
 
     Push.getTokenStream.listen((event) {
       tokeStream.add((event, NotificationServiceType.huawei));
-    });
-
-    Push.onMessageReceivedStream.listen((event) {
-      onMessageListen?.call(
-        NotificationMessage(
-          data: event.dataOfMap,
-          title: event.notification?.title,
-          body: event.notification?.body,
-        ),
-      );
-    });
-
-    Push.onNotificationOpenedApp.listen((event) {
-      // TODO(jackwill): check event type
-      debugPrint(
-        "----------------------huawei noti opened ${event.toString()}----------------------",
-      );
-      onMessageOpened?.call(
-        NotificationMessage(
-          data: (event as RemoteMessage).dataOfMap,
-          title: event.notification?.title,
-          body: event.notification?.body,
-        ),
-      );
     });
   }
 
@@ -58,5 +32,35 @@ class HCMNotificationConfig extends NotificationConfig {
             title: initialMessage.notification?.title,
             body: initialMessage.notification?.body,
           );
+  }
+
+  @override
+  void onMessageListen(void Function(NotificationMessage message) callBack) {
+    Push.onMessageReceivedStream.listen((event) {
+      callBack.call(
+        NotificationMessage(
+          data: event.dataOfMap,
+          title: event.notification?.title,
+          body: event.notification?.body,
+        ),
+      );
+    });
+  }
+
+  @override
+  void onMessageOpened(void Function(NotificationMessage message) callBack) {
+    Push.onNotificationOpenedApp.listen((event) {
+      // TODO(jackwill): check event type
+      debugPrint(
+        "----------------------huawei noti opened ${event.toString()}----------------------",
+      );
+      callBack.call(
+        NotificationMessage(
+          data: (event as RemoteMessage).dataOfMap,
+          title: event.notification?.title,
+          body: event.notification?.body,
+        ),
+      );
+    });
   }
 }

@@ -49,8 +49,6 @@ class NotificationService extends NotificationServiceInterface {
           options: options,
           hcmNotification: _hcmNotificationConfig,
           tokeStream: _tokeStream,
-          onMessageListen: onMessageListen,
-          onMessageOpened: onMessageOpened,
           vapidKey: vapidKey,
         ),
       );
@@ -60,8 +58,6 @@ class NotificationService extends NotificationServiceInterface {
           options: options,
           hcmNotification: _hcmNotificationConfig,
           tokeStream: _tokeStream,
-          onMessageListen: onMessageListen,
-          onMessageOpened: onMessageOpened,
           vapidKey: vapidKey,
         ),
       );
@@ -97,8 +93,28 @@ class NotificationService extends NotificationServiceInterface {
   }
 
   @override
-  void Function(NotificationMessage message)? onMessageListen;
+  Future<void> onMessageListen(
+    void Function(NotificationMessage message) callBack,
+  ) async {
+    final gmsAvailable = await checkGmsAvailable();
+
+    if (gmsAvailable) {
+      _fcmNotificationConfig.onMessageListen(callBack);
+    } else {
+      _hcmNotificationConfig.onMessageListen(callBack);
+    }
+  }
 
   @override
-  void Function(NotificationMessage message)? onMessageOpened;
+  Future<void> onMessageOpened(
+    void Function(NotificationMessage message) callBack,
+  ) async {
+    final gmsAvailable = await checkGmsAvailable();
+
+    if (gmsAvailable) {
+      _fcmNotificationConfig.onMessageOpened(callBack);
+    } else {
+      _hcmNotificationConfig.onMessageOpened(callBack);
+    }
+  }
 }

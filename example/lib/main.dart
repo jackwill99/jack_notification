@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:jack_notification/jack_notification.dart';
 import 'package:jack_notification_example/firebase_options.dart';
@@ -28,11 +27,6 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> initPlatformState() async {
     final a = JackNotification(options: DefaultFirebaseOptions.currentPlatform);
-    if (await a.checkGmsAvailable()) {
-      debugPrint("----------------------initialized----------------------");
-      await Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform);
-    }
     a.onMessageListen((message) {
       debugPrint(
           "----------------------onmessage listen $message----------------------");

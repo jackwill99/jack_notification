@@ -34,8 +34,6 @@ class FCMNotificationConfig extends NotificationConfig {
     required FirebaseOptions options,
     required NotificationConfig hcmNotification,
     required BehaviorSubject<(String, NotificationServiceType)> tokeStream,
-    void Function(NotificationMessage message)? onMessageListen,
-    void Function(NotificationMessage message)? onMessageOpened,
     String? vapidKey,
   }) async {
     debugPrint(
@@ -67,34 +65,12 @@ class FCMNotificationConfig extends NotificationConfig {
           options: options,
           hcmNotification: hcmNotification,
           tokeStream: tokeStream,
-          onMessageListen: onMessageListen,
-          onMessageOpened: onMessageOpened,
         ),
       );
     }
 
     FirebaseMessaging.instance.onTokenRefresh.listen((event) {
       tokeStream.add((event, NotificationServiceType.firebase));
-    });
-
-    FirebaseMessaging.onMessage.listen((message) {
-      onMessageListen?.call(
-        NotificationMessage(
-          data: message.data.isEmpty ? null : message.data,
-          title: message.notification?.title,
-          body: message.notification?.body,
-        ),
-      );
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      onMessageOpened?.call(
-        NotificationMessage(
-          data: message.data.isEmpty ? null : message.data,
-          title: message.notification?.title,
-          body: message.notification?.body,
-        ),
-      );
     });
   }
 
@@ -110,5 +86,31 @@ class FCMNotificationConfig extends NotificationConfig {
             title: initialMessage.notification?.title,
             body: initialMessage.notification?.body,
           );
+  }
+
+  @override
+  void onMessageListen(void Function(NotificationMessage message) callBack) {
+    FirebaseMessaging.onMessage.listen((message) {
+      callBack.call(
+        NotificationMessage(
+          data: message.data.isEmpty ? null : message.data,
+          title: message.notification?.title,
+          body: message.notification?.body,
+        ),
+      );
+    });
+  }
+
+  @override
+  void onMessageOpened(void Function(NotificationMessage message) callBack) {
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      callBack.call(
+        NotificationMessage(
+          data: message.data.isEmpty ? null : message.data,
+          title: message.notification?.title,
+          body: message.notification?.body,
+        ),
+      );
+    });
   }
 }

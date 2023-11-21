@@ -16,17 +16,21 @@ class JackNotification {
   Stream<(String token, NotificationServiceType service)> get getTokenStream =>
       _service.getTokenStream;
 
-  void onMessageOpened(Function(NotificationMessage message) onMessageOpened) {
-    _service.onMessageOpened = onMessageOpened;
-  }
-
-  void onMessageListen(Function(NotificationMessage message) onMessageListen) {
-    _service.onMessageListen = onMessageListen;
-  }
-
   /// Check google messaging service available or not
   Future<bool> checkGmsAvailable() async {
     return _service.checkGmsAvailable();
+  }
+
+  /// When an incoming Notification instant messaging is received whilst the Flutter instance is in the foreground.
+  ///
+  void onMessageListen(Function(NotificationMessage message) onMessageListen) {
+    _service.onMessageListen(onMessageListen);
+  }
+
+  /// When a user presses a notification message displayed via Notification instant Messaging.
+  ///
+  void onMessageOpened(Function(NotificationMessage message) onMessageOpened) {
+    _service.onMessageOpened(onMessageOpened);
   }
 
   /// It is assumed that all messages contain a data field with the key 'type'
