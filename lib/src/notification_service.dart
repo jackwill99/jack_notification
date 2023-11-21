@@ -16,14 +16,11 @@ import "package:rxdart/subjects.dart";
 class NotificationService extends NotificationServiceInterface {
   NotificationService({
     required FirebaseOptions options,
-    bool isRegistered = false,
     String? vapidKey,
   }) {
     _options = options;
     _vapidKey = vapidKey;
-    if (!isRegistered) {
-      unawaited(_setup());
-    }
+
     getTokenStream = _tokeStream.stream;
   }
 
@@ -34,7 +31,6 @@ class NotificationService extends NotificationServiceInterface {
     final instance = NotificationService(
       options: options,
       vapidKey: vapidKey,
-      isRegistered: true,
     );
     return instance;
   }
@@ -56,7 +52,8 @@ class NotificationService extends NotificationServiceInterface {
   final _tokeStream =
       BehaviorSubject<(String token, NotificationServiceType service)>();
 
-  Future<void> _setup() async {
+  @override
+  Future<void> setup() async {
     final gmsAvailable = await checkGmsAvailable();
 
     assert(

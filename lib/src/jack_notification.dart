@@ -1,4 +1,6 @@
 import "package:firebase_core/firebase_core.dart";
+import "package:firebase_messaging/firebase_messaging.dart";
+import "package:huawei_push/huawei_push.dart" as huawei;
 import "package:jack_notification/src/model/notification_message.dart";
 import "package:jack_notification/src/model/notification_service_interface.dart";
 import "package:jack_notification/src/notification_service.dart";
@@ -8,22 +10,30 @@ class JackNotification {
     required FirebaseOptions options,
     String? vapidKey,
   }) {
-    _service = NotificationService(options: options, vapidKey: vapidKey);
+    _vapidKey = vapidKey;
+    _options = options;
   }
 
   late NotificationServiceInterface _service;
+  late FirebaseOptions _options;
+  String? _vapidKey;
 
   Stream<(String token, NotificationServiceType service)> get getTokenStream =>
       _service.getTokenStream;
 
-  /// Fake firebase options
+  /// Mock firebase options
   ///
-  static const _options = FirebaseOptions(
+  static const _mockOptions = FirebaseOptions(
     apiKey: "",
     appId: "",
     messagingSenderId: "",
     projectId: "",
   );
+
+  Future<void> init() async {
+    _service = NotificationService(options: _options, vapidKey: _vapidKey);
+    await _service.setup();
+  }
 
   /// Check google messaging service available or not
   Future<bool> checkGmsAvailable() async {
@@ -60,10 +70,10 @@ class JackNotification {
   /// To listen the notification when the app is in terminated state
   ///
   static Future<void> onFcmMessageBackground({
-    required Future<void> Function(dynamic message) callBack,
+    required Future<void> Function(RemoteMessage message) callBack,
   }) async {
     final backgroundService = NotificationService.backgroundProcess(
-      options: _options,
+      options: _mockOptions,
     );
 
     await backgroundService.onFcmMessageBackground(callBack);
@@ -72,10 +82,10 @@ class JackNotification {
   /// To listen the notification when the app is in terminated state
   ///
   static Future<void> onHcmMessageBackground({
-    required Future<void> Function(dynamic message) callBack,
+    required Future<void> Function(huawei.RemoteMessage message) callBack,
   }) async {
     final backgroundService = NotificationService.backgroundProcess(
-      options: _options,
+      options: _mockOptions,
     );
 
     await backgroundService.onHcmMessageBackground(callBack);

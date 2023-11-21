@@ -8,6 +8,9 @@ abstract class NotificationServiceInterface extends NotificationEvent {
   ///
   late Stream<(String token, NotificationServiceType service)> getTokenStream;
 
+  /// Initialization the instance
+  Future<void> setup();
+
   /// Check google messaging service available or not
   Future<bool> checkGmsAvailable();
 }

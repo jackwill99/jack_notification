@@ -4,9 +4,9 @@ import "package:firebase_core/firebase_core.dart";
 import "package:firebase_messaging/firebase_messaging.dart";
 import "package:flutter/cupertino.dart";
 import "package:huawei_push/huawei_push.dart" as huawei;
+import "package:jack_notification/jack_notification.dart";
 import "package:jack_notification/src/firebase_cloud_messaging/permissions.dart";
 import "package:jack_notification/src/model/notification_config.dart";
-import "package:jack_notification/src/model/notification_message.dart";
 import "package:jack_notification/src/model/notification_service_interface.dart";
 import "package:rxdart/subjects.dart";
 
@@ -123,7 +123,7 @@ class FCMNotificationConfig extends NotificationConfig {
 
   @override
   Future<void> onFcmMessageBackground(
-    Future<void> Function(RemoteMessage message) callBack,
+    Future<void> Function(FcmRemoteMessage message) callBack,
   ) async {
     FirebaseMessaging.onBackgroundMessage(callBack);
   }

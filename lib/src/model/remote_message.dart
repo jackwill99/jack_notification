@@ -1,3 +1,5 @@
-import "package:firebase_messaging/firebase_messaging.dart" as firebase;
+import "package:firebase_messaging/firebase_messaging.dart";
+import "package:huawei_push/huawei_push.dart" as huawei;
 
-class FCMRemoteMessage extends firebase.RemoteMessage {}
+typedef FcmRemoteMessage = RemoteMessage;
+typedef HcmRemoteMessage = huawei.RemoteMessage;

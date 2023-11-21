@@ -70,7 +70,7 @@ class HCMNotificationConfig extends NotificationConfig {
 
   @override
   Future<void> onFcmMessageBackground(
-    void Function(FCMRemoteMessage message) callBack,
+    void Function(FcmRemoteMessage message) callBack,
   ) {
     throw UnimplementedError();
   }
