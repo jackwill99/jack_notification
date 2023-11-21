@@ -13,8 +13,6 @@ import "package:rxdart/subjects.dart";
 class FCMNotificationConfig extends NotificationConfig {
   bool isFlutterLocalNotificationsInitialized = false;
 
-  late void Function(NotificationMessage message) _remoteMessageCallback;
-
   Future<void> _setupFlutterNotifications() async {
     if (isFlutterLocalNotificationsInitialized) {
       return;

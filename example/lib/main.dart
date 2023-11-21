@@ -5,6 +5,24 @@ import 'package:flutter/material.dart';
 import 'package:jack_notification/jack_notification.dart';
 import 'package:jack_notification_example/firebase_options.dart';
 
+/// firebase
+@pragma("vm:entry-point")
+Future<void> fcmRemoteMessage(message) async {
+  final remoteMessage = message as FCMRemoteMessage;
+  debugPrint(
+      "----------------------firebase background remote message----------------------");
+  print(remoteMessage.data);
+}
+
+/// huawei
+@pragma("vm:entry-point")
+Future<void> hcmRemoteMessage(message) async {
+  final remoteMessage = message as RemoteMessage;
+  debugPrint(
+      "----------------------huawei background remote message----------------------");
+  print(remoteMessage.dataOfMap);
+}
+
 void main() {
   runApp(const MyApp());
 }
@@ -26,18 +44,6 @@ class _MyAppState extends State<MyApp> {
 
     JackNotification.onFcmMessageBackground(callBack: fcmRemoteMessage);
     JackNotification.onHcmMessageBackground(callBack: hcmRemoteMessage);
-  }
-
-  /// firebase
-  Future<void> fcmRemoteMessage(message) async {
-    final remoteMessage = message as FCMRemoteMessage;
-    print(remoteMessage.data);
-  }
-
-  /// huawei
-  Future<void> hcmRemoteMessage(message) async {
-    final remoteMessage = message as RemoteMessage;
-    print(remoteMessage.dataOfMap);
   }
 
   Future<void> initPlatformState() async {

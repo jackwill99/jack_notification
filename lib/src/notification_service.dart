@@ -16,11 +16,14 @@ import "package:rxdart/subjects.dart";
 class NotificationService extends NotificationServiceInterface {
   NotificationService({
     required FirebaseOptions options,
+    bool isRegistered = false,
     String? vapidKey,
   }) {
     _options = options;
     _vapidKey = vapidKey;
-    unawaited(_setup());
+    if (!isRegistered) {
+      unawaited(_setup());
+    }
     getTokenStream = _tokeStream.stream;
   }
 
@@ -28,7 +31,11 @@ class NotificationService extends NotificationServiceInterface {
     required FirebaseOptions options,
     String? vapidKey,
   }) {
-    final instance = NotificationService(options: options, vapidKey: vapidKey);
+    final instance = NotificationService(
+      options: options,
+      vapidKey: vapidKey,
+      isRegistered: true,
+    );
     return instance;
   }
 
