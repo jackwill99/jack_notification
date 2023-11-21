@@ -12,6 +12,8 @@ import "package:rxdart/subjects.dart";
 class FCMNotificationConfig extends NotificationConfig {
   bool isFlutterLocalNotificationsInitialized = false;
 
+  late void Function(NotificationMessage message) _remoteMessageCallback;
+
   Future<void> _setupFlutterNotifications() async {
     if (isFlutterLocalNotificationsInitialized) {
       return;
@@ -118,13 +120,19 @@ class FCMNotificationConfig extends NotificationConfig {
   Future<void> onMessageBackground(
     void Function(NotificationMessage message) callBack,
   ) async {
-    FirebaseMessaging.onBackgroundMessage((remoteMessage) async {
-      final message = NotificationMessage(
-        data: remoteMessage.data,
-        title: remoteMessage.notification?.title,
-        body: remoteMessage.notification?.body,
-      );
-      callBack(message);
-    });
+    _remoteMessageCallback = callBack;
+    FirebaseMessaging.onBackgroundMessage(_remoteMessaging);
+  }
+
+  @pragma("vm:entry-point")
+  Future<void> _remoteMessaging(
+    RemoteMessage remoteMessage,
+  ) async {
+    final message = NotificationMessage(
+      data: remoteMessage.data,
+      title: remoteMessage.notification?.title,
+      body: remoteMessage.notification?.body,
+    );
+    _remoteMessageCallback(message);
   }
 }
