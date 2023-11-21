@@ -3,11 +3,11 @@ import "dart:async";
 import "package:firebase_core/firebase_core.dart";
 import "package:firebase_messaging/firebase_messaging.dart";
 import "package:flutter/cupertino.dart";
+import "package:huawei_push/huawei_push.dart" as huawei;
 import "package:jack_notification/src/firebase_cloud_messaging/permissions.dart";
 import "package:jack_notification/src/model/notification_config.dart";
 import "package:jack_notification/src/model/notification_message.dart";
 import "package:jack_notification/src/model/notification_service_interface.dart";
-import "package:jack_notification/src/model/remote_message_callback.dart";
 import "package:rxdart/subjects.dart";
 
 class FCMNotificationConfig extends NotificationConfig {
@@ -80,6 +80,9 @@ class FCMNotificationConfig extends NotificationConfig {
   @override
   void onMessageListen(void Function(NotificationMessage message) callBack) {
     FirebaseMessaging.onMessage.listen((message) {
+      debugPrint(
+        "----------------------Firebase OnMessageListen----------------------",
+      );
       callBack.call(
         NotificationMessage(
           data: message.data.isEmpty ? null : message.data,
@@ -93,6 +96,9 @@ class FCMNotificationConfig extends NotificationConfig {
   @override
   void onMessageOpened(void Function(NotificationMessage message) callBack) {
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      debugPrint(
+        "----------------------Firebase OnMessageOpened----------------------",
+      );
       callBack.call(
         NotificationMessage(
           data: message.data.isEmpty ? null : message.data,
@@ -118,10 +124,16 @@ class FCMNotificationConfig extends NotificationConfig {
   }
 
   @override
-  Future<void> onMessageBackground(
-    void Function(NotificationMessage message) callBack,
+  Future<void> onFcmMessageBackground(
+    Future<void> Function(RemoteMessage message) callBack,
   ) async {
-    RemoteMessageCallBack().fcmRemoteMessageCallback = callBack;
-    FirebaseMessaging.onBackgroundMessage(fcmRemoteMessaging);
+    FirebaseMessaging.onBackgroundMessage(callBack);
+  }
+
+  @override
+  Future<void> onHcmMessageBackground(
+    void Function(huawei.RemoteMessage message) callBack,
+  ) {
+    throw UnimplementedError();
   }
 }

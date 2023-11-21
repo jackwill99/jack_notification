@@ -23,6 +23,21 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initPlatformState();
+
+    JackNotification.onFcmMessageBackground(callBack: fcmRemoteMessage);
+    JackNotification.onHcmMessageBackground(callBack: hcmRemoteMessage);
+  }
+
+  /// firebase
+  Future<void> fcmRemoteMessage(message) async {
+    final remoteMessage = message as FCMRemoteMessage;
+    print(remoteMessage.data);
+  }
+
+  /// huawei
+  Future<void> hcmRemoteMessage(message) async {
+    final remoteMessage = message as RemoteMessage;
+    print(remoteMessage.dataOfMap);
   }
 
   Future<void> initPlatformState() async {

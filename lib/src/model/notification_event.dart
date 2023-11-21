@@ -1,3 +1,5 @@
+import "package:firebase_messaging/firebase_messaging.dart" as firebase;
+import "package:huawei_push/huawei_push.dart" as huawei;
 import "package:jack_notification/src/model/notification_message.dart";
 
 abstract class NotificationEvent {
@@ -17,5 +19,13 @@ abstract class NotificationEvent {
 
   /// To listen the notification when the app is in terminated state
   ///
-  Future<void> onMessageBackground(void Function(NotificationMessage message) callBack);
+  Future<void> onFcmMessageBackground(
+    Future<void> Function(firebase.RemoteMessage message) callBack,
+  );
+
+  /// To listen the notification when the app is in terminated state
+  ///
+  Future<void> onHcmMessageBackground(
+    void Function(huawei.RemoteMessage message) callBack,
+  );
 }

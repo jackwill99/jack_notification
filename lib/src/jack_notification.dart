@@ -16,6 +16,15 @@ class JackNotification {
   Stream<(String token, NotificationServiceType service)> get getTokenStream =>
       _service.getTokenStream;
 
+  /// Fake firebase options
+  ///
+  static const _options = FirebaseOptions(
+    apiKey: "",
+    appId: "",
+    messagingSenderId: "",
+    projectId: "",
+  );
+
   /// Check google messaging service available or not
   Future<bool> checkGmsAvailable() async {
     return _service.checkGmsAvailable();
@@ -44,16 +53,31 @@ class JackNotification {
     return _service.getInitialNotification();
   }
 
-  static Future<void> onMessageBackground({
-    required FirebaseOptions options,
-    required void Function(NotificationMessage message) callBack,
-    String? vapidKey,
+  static Future<void> fcmInitialize(FirebaseOptions options) async {
+    await Firebase.initializeApp(options: options);
+  }
+
+  /// To listen the notification when the app is in terminated state
+  ///
+  static Future<void> onFcmMessageBackground({
+    required Future<void> Function(dynamic message) callBack,
   }) async {
     final backgroundService = NotificationService.backgroundProcess(
-      options: options,
-      vapidKey: vapidKey,
+      options: _options,
     );
 
-    await backgroundService.onMessageBackground(callBack);
+    await backgroundService.onFcmMessageBackground(callBack);
+  }
+
+  /// To listen the notification when the app is in terminated state
+  ///
+  static Future<void> onHcmMessageBackground({
+    required Future<void> Function(dynamic message) callBack,
+  }) async {
+    final backgroundService = NotificationService.backgroundProcess(
+      options: _options,
+    );
+
+    await backgroundService.onHcmMessageBackground(callBack);
   }
 }

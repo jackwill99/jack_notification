@@ -4,7 +4,7 @@ import "package:huawei_push/huawei_push.dart";
 import "package:jack_notification/src/model/notification_config.dart";
 import "package:jack_notification/src/model/notification_message.dart";
 import "package:jack_notification/src/model/notification_service_interface.dart";
-import "package:jack_notification/src/model/remote_message_callback.dart";
+import "package:jack_notification/src/model/remote_message.dart";
 import "package:rxdart/subjects.dart";
 
 class HCMNotificationConfig extends NotificationConfig {
@@ -25,6 +25,9 @@ class HCMNotificationConfig extends NotificationConfig {
   @override
   void onMessageListen(void Function(NotificationMessage message) callBack) {
     Push.onMessageReceivedStream.listen((event) {
+      debugPrint(
+        "----------------------Huawei OnMessageListen----------------------",
+      );
       callBack.call(
         NotificationMessage(
           data: event.dataOfMap,
@@ -40,7 +43,7 @@ class HCMNotificationConfig extends NotificationConfig {
     Push.onNotificationOpenedApp.listen((event) {
       // TODO(jackwill): check event type
       debugPrint(
-        "----------------------huawei noti opened ${event.toString()}----------------------",
+        "----------------------Huawei OnMessageOpened ${event.toString()}----------------------",
       );
       callBack.call(
         NotificationMessage(
@@ -66,10 +69,16 @@ class HCMNotificationConfig extends NotificationConfig {
   }
 
   @override
-  Future<void> onMessageBackground(
-    void Function(NotificationMessage message) callBack,
+  Future<void> onFcmMessageBackground(
+    void Function(FCMRemoteMessage message) callBack,
+  ) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> onHcmMessageBackground(
+    void Function(RemoteMessage message) callBack,
   ) async {
-    RemoteMessageCallBack().hcmRemoteMessageCallback = callBack;
-    await Push.registerBackgroundMessageHandler(hcmRemoteMessaging);
+    await Push.registerBackgroundMessageHandler(callBack);
   }
 }
