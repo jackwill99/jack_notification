@@ -16,12 +16,27 @@ class NotificationService extends NotificationServiceInterface {
     required FirebaseOptions options,
     String? vapidKey,
   }) {
-    unawaited(_setup(options: options, vapidKey: vapidKey));
+    _options = options;
+    _vapidKey = vapidKey;
+    unawaited(_setup());
     getTokenStream = _tokeStream.stream;
+  }
+
+  factory NotificationService.backgroundProcess({
+    required FirebaseOptions options,
+    String? vapidKey,
+  }) {
+    final instance = NotificationService(options: options, vapidKey: vapidKey);
+    return instance;
   }
 
   final _googleMessagingServiceAvailability =
       GoogleMessagingServiceAvailability();
+
+  /// Instance properties
+  ///
+  late FirebaseOptions _options;
+  String? _vapidKey;
 
   /// Notification Service
   final NotificationConfig _fcmNotificationConfig = FCMNotificationConfig();
@@ -32,34 +47,26 @@ class NotificationService extends NotificationServiceInterface {
   final _tokeStream =
       BehaviorSubject<(String token, NotificationServiceType service)>();
 
-  Future<void> _setup({
-    required FirebaseOptions options,
-    String? vapidKey,
-  }) async {
+  Future<void> _setup() async {
     final gmsAvailable = await checkGmsAvailable();
 
     assert(
-      !(gmsAvailable && kIsWeb) || vapidKey != null,
+      !(gmsAvailable && kIsWeb) || _vapidKey != null,
       "This device support google messaging service. So, you need vapidKey.",
     );
 
     if (gmsAvailable) {
-      unawaited(
-        _fcmNotificationConfig.init(
-          options: options,
-          hcmNotification: _hcmNotificationConfig,
-          tokeStream: _tokeStream,
-          vapidKey: vapidKey,
-        ),
+      await _fcmNotificationConfig.init(
+        options: _options,
+        hcmNotification: _hcmNotificationConfig,
+        tokeStream: _tokeStream,
+        vapidKey: _vapidKey,
       );
     } else {
-      unawaited(
-        _hcmNotificationConfig.init(
-          options: options,
-          hcmNotification: _hcmNotificationConfig,
-          tokeStream: _tokeStream,
-          vapidKey: vapidKey,
-        ),
+      await _hcmNotificationConfig.init(
+        options: _options,
+        hcmNotification: _hcmNotificationConfig,
+        tokeStream: _tokeStream,
       );
     }
   }
@@ -70,35 +77,18 @@ class NotificationService extends NotificationServiceInterface {
       return true;
     }
 
-    if (isGmsAvailable == null) {
-      final gmsAvailable =
-          await _googleMessagingServiceAvailability.isGmsAvailable();
-      isGmsAvailable = gmsAvailable;
+    final gmsAvailable =
+        await _googleMessagingServiceAvailability.isGmsAvailable();
+    isGmsAvailable = gmsAvailable;
 
-      return gmsAvailable;
-    }
-
-    return isGmsAvailable!;
-  }
-
-  @override
-  Future<NotificationMessage?> onMessageTerminatedOpen() async {
-    final gmsAvailable = await checkGmsAvailable();
-
-    if (gmsAvailable) {
-      return _fcmNotificationConfig.onMessageTerminatedOpen();
-    }
-
-    return _hcmNotificationConfig.onMessageTerminatedOpen();
+    return gmsAvailable;
   }
 
   @override
   Future<void> onMessageListen(
     void Function(NotificationMessage message) callBack,
   ) async {
-    final gmsAvailable = await checkGmsAvailable();
-
-    if (gmsAvailable) {
+    if (isGmsAvailable) {
       _fcmNotificationConfig.onMessageListen(callBack);
     } else {
       _hcmNotificationConfig.onMessageListen(callBack);
@@ -109,12 +99,32 @@ class NotificationService extends NotificationServiceInterface {
   Future<void> onMessageOpened(
     void Function(NotificationMessage message) callBack,
   ) async {
-    final gmsAvailable = await checkGmsAvailable();
-
-    if (gmsAvailable) {
+    if (isGmsAvailable) {
       _fcmNotificationConfig.onMessageOpened(callBack);
     } else {
       _hcmNotificationConfig.onMessageOpened(callBack);
+    }
+  }
+
+  @override
+  Future<NotificationMessage?> getInitialNotification() async {
+    if (isGmsAvailable) {
+      return _fcmNotificationConfig.getInitialNotification();
+    }
+
+    return _hcmNotificationConfig.getInitialNotification();
+  }
+
+  @override
+  Future<void> onMessageBackground(
+    void Function(NotificationMessage message) callBack,
+  ) async {
+    await _setup();
+
+    if (isGmsAvailable) {
+      await _fcmNotificationConfig.onMessageBackground(callBack);
+    } else {
+      await _hcmNotificationConfig.onMessageBackground(callBack);
     }
   }
 }

@@ -13,5 +13,9 @@ abstract class NotificationEvent {
   /// call this method in application initial cycle and if initialMessage ,
   /// Get any messages which caused the application to open from
   /// a terminated state.
-  Future<NotificationMessage?> onMessageTerminatedOpen();
+  Future<NotificationMessage?> getInitialNotification();
+
+  /// To listen the notification when the app is in terminated state
+  ///
+  Future<void> onMessageBackground(void Function(NotificationMessage message) callBack);
 }

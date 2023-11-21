@@ -75,20 +75,6 @@ class FCMNotificationConfig extends NotificationConfig {
   }
 
   @override
-  Future<NotificationMessage?> onMessageTerminatedOpen() async {
-    final RemoteMessage? initialMessage =
-        await FirebaseMessaging.instance.getInitialMessage();
-
-    return initialMessage == null
-        ? null
-        : NotificationMessage(
-            data: initialMessage.data,
-            title: initialMessage.notification?.title,
-            body: initialMessage.notification?.body,
-          );
-  }
-
-  @override
   void onMessageListen(void Function(NotificationMessage message) callBack) {
     FirebaseMessaging.onMessage.listen((message) {
       callBack.call(
@@ -111,6 +97,34 @@ class FCMNotificationConfig extends NotificationConfig {
           body: message.notification?.body,
         ),
       );
+    });
+  }
+
+  @override
+  Future<NotificationMessage?> getInitialNotification() async {
+    final RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+
+    return initialMessage == null
+        ? null
+        : NotificationMessage(
+            data: initialMessage.data,
+            title: initialMessage.notification?.title,
+            body: initialMessage.notification?.body,
+          );
+  }
+
+  @override
+  Future<void> onMessageBackground(
+    void Function(NotificationMessage message) callBack,
+  ) async {
+    FirebaseMessaging.onBackgroundMessage((remoteMessage) async {
+      final message = NotificationMessage(
+        data: remoteMessage.data,
+        title: remoteMessage.notification?.title,
+        body: remoteMessage.notification?.body,
+      );
+      callBack(message);
     });
   }
 }

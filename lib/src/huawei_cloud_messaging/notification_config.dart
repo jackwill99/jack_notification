@@ -22,19 +22,6 @@ class HCMNotificationConfig extends NotificationConfig {
   }
 
   @override
-  Future<NotificationMessage?> onMessageTerminatedOpen() async {
-    final RemoteMessage? initialMessage = await Push.getInitialNotification();
-
-    return initialMessage == null
-        ? null
-        : NotificationMessage(
-            data: initialMessage.dataOfMap,
-            title: initialMessage.notification?.title,
-            body: initialMessage.notification?.body,
-          );
-  }
-
-  @override
   void onMessageListen(void Function(NotificationMessage message) callBack) {
     Push.onMessageReceivedStream.listen((event) {
       callBack.call(
@@ -61,6 +48,34 @@ class HCMNotificationConfig extends NotificationConfig {
           body: event.notification?.body,
         ),
       );
+    });
+  }
+
+  @override
+  Future<NotificationMessage?> getInitialNotification() async {
+    final RemoteMessage? initialMessage = await Push.getInitialNotification();
+
+    return initialMessage == null
+        ? null
+        : NotificationMessage(
+            data: initialMessage.dataOfMap,
+            title: initialMessage.notification?.title,
+            body: initialMessage.notification?.body,
+          );
+  }
+
+  @override
+  Future<void> onMessageBackground(
+    void Function(NotificationMessage message) callBack,
+  ) async {
+    await Push.registerBackgroundMessageHandler((remoteMessage) {
+      final message = NotificationMessage(
+        data: remoteMessage.dataOfMap,
+        title: remoteMessage.notification?.title,
+        body: remoteMessage.notification?.body,
+      );
+
+      callBack(message);
     });
   }
 }

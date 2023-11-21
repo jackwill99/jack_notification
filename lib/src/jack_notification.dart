@@ -23,20 +23,37 @@ class JackNotification {
 
   /// When an incoming Notification instant messaging is received whilst the Flutter instance is in the foreground.
   ///
-  void onMessageListen(Function(NotificationMessage message) onMessageListen) {
+  void onMessageListen(
+    void Function(NotificationMessage message) onMessageListen,
+  ) {
     _service.onMessageListen(onMessageListen);
   }
 
   /// When a user presses a notification message displayed via Notification instant Messaging.
   ///
-  void onMessageOpened(Function(NotificationMessage message) onMessageOpened) {
+  void onMessageOpened(
+    void Function(NotificationMessage message) onMessageOpened,
+  ) {
     _service.onMessageOpened(onMessageOpened);
   }
 
   /// It is assumed that all messages contain a data field with the key 'type'
   /// call this method in application initial cycle and if initialMessage , do ur actions
   /// Initial notification message from the terminated state of app
-  Future<NotificationMessage?> onMessageTerminatedOpen() async {
-    return _service.onMessageTerminatedOpen();
+  Future<NotificationMessage?> getInitialNotification() async {
+    return _service.getInitialNotification();
+  }
+
+  static Future<void> onMessageBackground({
+    required FirebaseOptions options,
+    required void Function(NotificationMessage message) callBack,
+    String? vapidKey,
+  }) async {
+    final backgroundService = NotificationService.backgroundProcess(
+      options: options,
+      vapidKey: vapidKey,
+    );
+
+    await backgroundService.onMessageBackground(callBack);
   }
 }

@@ -2,7 +2,7 @@ import "package:jack_notification/src/model/notification_event.dart";
 
 abstract class NotificationServiceInterface extends NotificationEvent {
   /// Checking this device will support google messaging service or not
-  bool? isGmsAvailable;
+  bool isGmsAvailable = true;
 
   /// Token Stream
   ///
