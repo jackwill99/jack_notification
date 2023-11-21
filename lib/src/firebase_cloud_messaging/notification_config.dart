@@ -7,6 +7,7 @@ import "package:jack_notification/src/firebase_cloud_messaging/permissions.dart"
 import "package:jack_notification/src/model/notification_config.dart";
 import "package:jack_notification/src/model/notification_message.dart";
 import "package:jack_notification/src/model/notification_service_interface.dart";
+import "package:jack_notification/src/model/remote_message_callback.dart";
 import "package:rxdart/subjects.dart";
 
 class FCMNotificationConfig extends NotificationConfig {
@@ -120,19 +121,7 @@ class FCMNotificationConfig extends NotificationConfig {
   Future<void> onMessageBackground(
     void Function(NotificationMessage message) callBack,
   ) async {
-    _remoteMessageCallback = callBack;
-    FirebaseMessaging.onBackgroundMessage(_remoteMessaging);
-  }
-
-  @pragma("vm:entry-point")
-  Future<void> _remoteMessaging(
-    RemoteMessage remoteMessage,
-  ) async {
-    final message = NotificationMessage(
-      data: remoteMessage.data,
-      title: remoteMessage.notification?.title,
-      body: remoteMessage.notification?.body,
-    );
-    _remoteMessageCallback(message);
+    RemoteMessageCallBack().fcmRemoteMessageCallback = callBack;
+    FirebaseMessaging.onBackgroundMessage(fcmRemoteMessaging);
   }
 }

@@ -4,11 +4,10 @@ import "package:huawei_push/huawei_push.dart";
 import "package:jack_notification/src/model/notification_config.dart";
 import "package:jack_notification/src/model/notification_message.dart";
 import "package:jack_notification/src/model/notification_service_interface.dart";
+import "package:jack_notification/src/model/remote_message_callback.dart";
 import "package:rxdart/subjects.dart";
 
 class HCMNotificationConfig extends NotificationConfig {
-  late void Function(NotificationMessage message) _remoteMessageCallback;
-
   @override
   Future<void> init({
     required FirebaseOptions options,
@@ -70,19 +69,7 @@ class HCMNotificationConfig extends NotificationConfig {
   Future<void> onMessageBackground(
     void Function(NotificationMessage message) callBack,
   ) async {
-    _remoteMessageCallback = callBack;
-    await Push.registerBackgroundMessageHandler(_remoteMessaging);
-  }
-
-  @pragma("vm:entry-point")
-  Future<void> _remoteMessaging(
-    RemoteMessage remoteMessage,
-  ) async {
-    final message = NotificationMessage(
-      data: remoteMessage.dataOfMap,
-      title: remoteMessage.notification?.title,
-      body: remoteMessage.notification?.body,
-    );
-    _remoteMessageCallback(message);
+    RemoteMessageCallBack().hcmRemoteMessageCallback = callBack;
+    await Push.registerBackgroundMessageHandler(hcmRemoteMessaging);
   }
 }
