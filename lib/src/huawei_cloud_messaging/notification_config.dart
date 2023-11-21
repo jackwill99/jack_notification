@@ -7,6 +7,8 @@ import "package:jack_notification/src/model/notification_service_interface.dart"
 import "package:rxdart/subjects.dart";
 
 class HCMNotificationConfig extends NotificationConfig {
+  late void Function(NotificationMessage message) _remoteMessageCallback;
+
   @override
   Future<void> init({
     required FirebaseOptions options,
@@ -68,14 +70,19 @@ class HCMNotificationConfig extends NotificationConfig {
   Future<void> onMessageBackground(
     void Function(NotificationMessage message) callBack,
   ) async {
-    await Push.registerBackgroundMessageHandler((remoteMessage) {
-      final message = NotificationMessage(
-        data: remoteMessage.dataOfMap,
-        title: remoteMessage.notification?.title,
-        body: remoteMessage.notification?.body,
-      );
+    _remoteMessageCallback = callBack;
+    await Push.registerBackgroundMessageHandler(_remoteMessaging);
+  }
 
-      callBack(message);
-    });
+  @pragma("vm:entry-point")
+  Future<void> _remoteMessaging(
+    RemoteMessage remoteMessage,
+  ) async {
+    final message = NotificationMessage(
+      data: remoteMessage.dataOfMap,
+      title: remoteMessage.notification?.title,
+      body: remoteMessage.notification?.body,
+    );
+    _remoteMessageCallback(message);
   }
 }
