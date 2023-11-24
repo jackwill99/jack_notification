@@ -8,6 +8,8 @@ import 'package:jack_notification_example/firebase_options.dart';
 /// firebase
 @pragma("vm:entry-point")
 Future<void> fcmRemoteMessage(message) async {
+  await JackNotification.fcmInitialize(DefaultFirebaseOptions.currentPlatform);
+
   final remoteMessage = message as FcmRemoteMessage;
   message.toMap();
   debugPrint(
@@ -25,6 +27,9 @@ Future<void> hcmRemoteMessage(message) async {
 }
 
 void main() {
+  JackNotification.onFcmMessageBackground(callBack: fcmRemoteMessage);
+  JackNotification.onHcmMessageBackground(callBack: hcmRemoteMessage);
+
   runApp(const MyApp());
 }
 
@@ -42,22 +47,34 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initPlatformState();
-
-    JackNotification.onFcmMessageBackground(callBack: fcmRemoteMessage);
-    JackNotification.onHcmMessageBackground(callBack: hcmRemoteMessage);
   }
 
   Future<void> initPlatformState() async {
-    final a = JackNotification(options: DefaultFirebaseOptions.currentPlatform);
-    await a.init();
+    final jackNotification =
+        JackNotification(options: DefaultFirebaseOptions.currentPlatform);
+    await jackNotification.init();
 
-    a.onMessageListen((message) {
+    jackNotification.onMessageListen((message) {
       debugPrint(
           "----------------------onmessage listen $message----------------------");
     });
-    a.getTokenStream.listen((value) {
+    jackNotification.onMessageOpened((message) {
+      debugPrint(
+          "----------------------onmessage opened $message----------------------");
+    });
+    jackNotification.getTokenStream.listen((value) {
       debugPrint(
           "----------------------token ${value.$1}-------service ${value.$2}---------------");
+    });
+
+    notification.listenOpenedNotifications((value) {
+      debugPrint(
+          "------------opened local notification----------${value.payload}----------------------");
+    });
+
+    notification.listenTerminatedNotifications((value) {
+      debugPrint(
+          "----------------------terminated local notification-------${value.didNotificationLaunchApp}---------------");
     });
   }
 
@@ -68,14 +85,18 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Center(
+        body: const Center(
           child: Text('Running on: '),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             final random = Random().nextInt(10);
             notification.showNotification(
-                id: random, title: "Notification", body: "test");
+              id: random,
+              title: "Notification",
+              body: "test",
+              payload: "custom show notification",
+            );
           },
           child: Icon(Icons.notifications_active),
         ),

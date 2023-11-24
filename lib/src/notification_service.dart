@@ -4,13 +4,13 @@ import "dart:io";
 import "package:firebase_core/firebase_core.dart";
 import "package:firebase_messaging/firebase_messaging.dart";
 import "package:flutter/foundation.dart";
-import "package:huawei_push/huawei_push.dart" as huawei;
 import "package:jack_notification/src/firebase_cloud_messaging/notification_config.dart";
 import "package:jack_notification/src/gms_availability/gms_availability.dart";
 import "package:jack_notification/src/huawei_cloud_messaging/notification_config.dart";
 import "package:jack_notification/src/model/notification_config.dart";
 import "package:jack_notification/src/model/notification_message.dart";
 import "package:jack_notification/src/model/notification_service_interface.dart";
+import "package:jack_notification/src/model/remote_message.dart";
 import "package:rxdart/subjects.dart";
 
 class NotificationService extends NotificationServiceInterface {
@@ -132,7 +132,7 @@ class NotificationService extends NotificationServiceInterface {
 
   @override
   Future<void> onHcmMessageBackground(
-    void Function(huawei.RemoteMessage message) callBack,
+    void Function(HcmRemoteMessage message) callBack,
   ) async {
     if (Platform.isAndroid && !isGmsAvailable) {
       await _hcmNotificationConfig.onHcmMessageBackground(callBack);

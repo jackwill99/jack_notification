@@ -1,6 +1,4 @@
-import "package:firebase_messaging/firebase_messaging.dart" as firebase;
-import "package:huawei_push/huawei_push.dart" as huawei;
-import "package:jack_notification/src/model/notification_message.dart";
+import "package:jack_notification/jack_notification.dart";
 
 abstract class NotificationEvent {
   /// When an incoming Notification instant messaging is received whilst the Flutter instance is in the foreground.
@@ -20,12 +18,12 @@ abstract class NotificationEvent {
   /// To listen the notification when the app is in terminated state
   ///
   Future<void> onFcmMessageBackground(
-    Future<void> Function(firebase.RemoteMessage message) callBack,
+    Future<void> Function(FcmRemoteMessage message) callBack,
   );
 
   /// To listen the notification when the app is in terminated state
   ///
   Future<void> onHcmMessageBackground(
-    void Function(huawei.RemoteMessage message) callBack,
+    void Function(HcmRemoteMessage message) callBack,
   );
 }
