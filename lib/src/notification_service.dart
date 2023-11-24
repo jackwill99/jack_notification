@@ -125,13 +125,17 @@ class NotificationService extends NotificationServiceInterface {
   Future<void> onFcmMessageBackground(
     Future<void> Function(RemoteMessage message) callBack,
   ) async {
-    await _fcmNotificationConfig.onFcmMessageBackground(callBack);
+    if (isGmsAvailable) {
+      await _fcmNotificationConfig.onFcmMessageBackground(callBack);
+    }
   }
 
   @override
   Future<void> onHcmMessageBackground(
     void Function(huawei.RemoteMessage message) callBack,
   ) async {
-    await _hcmNotificationConfig.onHcmMessageBackground(callBack);
+    if (Platform.isAndroid && !isGmsAvailable) {
+      await _hcmNotificationConfig.onHcmMessageBackground(callBack);
+    }
   }
 }
