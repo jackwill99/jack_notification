@@ -94,7 +94,10 @@ class NotificationService extends NotificationServiceInterface {
   Future<void> onMessageListen(
     void Function(NotificationMessage message) callBack,
   ) async {
-    if (isGmsAvailable) {
+      if(isGmsAvailable == null){
+        await checkGmsAvailable();
+      }
+    if (isGmsAvailable!) {
       _fcmNotificationConfig.onMessageListen(callBack);
     } else {
       _hcmNotificationConfig.onMessageListen(callBack);
@@ -105,7 +108,10 @@ class NotificationService extends NotificationServiceInterface {
   Future<void> onMessageOpened(
     void Function(NotificationMessage message) callBack,
   ) async {
-    if (isGmsAvailable) {
+    if(isGmsAvailable == null){
+        await checkGmsAvailable();
+    }
+    if (isGmsAvailable!) {
       _fcmNotificationConfig.onMessageOpened(callBack);
     } else {
       _hcmNotificationConfig.onMessageOpened(callBack);
@@ -114,7 +120,10 @@ class NotificationService extends NotificationServiceInterface {
 
   @override
   Future<NotificationMessage?> getInitialNotification() async {
-    if (isGmsAvailable) {
+    if(isGmsAvailable == null){
+        await checkGmsAvailable();
+      }
+    if (isGmsAvailable!) {
       return _fcmNotificationConfig.getInitialNotification();
     }
 
@@ -125,7 +134,10 @@ class NotificationService extends NotificationServiceInterface {
   Future<void> onFcmMessageBackground(
     Future<void> Function(RemoteMessage message) callBack,
   ) async {
-    if (isGmsAvailable) {
+    if(isGmsAvailable == null){
+        await checkGmsAvailable();
+      }
+    if (isGmsAvailable!) {
       await _fcmNotificationConfig.onFcmMessageBackground(callBack);
     }
   }
@@ -134,7 +146,10 @@ class NotificationService extends NotificationServiceInterface {
   Future<void> onHcmMessageBackground(
     void Function(HcmRemoteMessage message) callBack,
   ) async {
-    if (Platform.isAndroid && !isGmsAvailable) {
+    if(isGmsAvailable == null){
+        await checkGmsAvailable();
+      }
+    if (Platform.isAndroid && !isGmsAvailable!) {
       await _hcmNotificationConfig.onHcmMessageBackground(callBack);
     }
   }
