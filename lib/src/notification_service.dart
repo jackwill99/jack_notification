@@ -80,6 +80,7 @@ class NotificationService extends NotificationServiceInterface {
   @override
   Future<bool> checkGmsAvailable() async {
     if (Platform.isIOS) {
+      isGmsAvailable = true;
       return true;
     }
 
