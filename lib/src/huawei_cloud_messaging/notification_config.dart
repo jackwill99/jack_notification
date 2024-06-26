@@ -41,15 +41,10 @@ class HCMNotificationConfig extends NotificationConfig {
   @override
   void onMessageOpened(void Function(NotificationMessage message) callBack) {
     Push.onNotificationOpenedApp.listen((event) {
-      // TODO(jackwill): check event type
-      debugPrint(
-        "----------------------Huawei OnMessageOpened ${event.toString()}----------------------",
-      );
+      final Map<String, dynamic>? message = event;
       callBack.call(
         NotificationMessage(
-          data: (event as RemoteMessage).dataOfMap,
-          title: event.notification?.title,
-          body: event.notification?.body,
+          data: message == null ? null : message["extras"],
         ),
       );
     });
@@ -57,15 +52,30 @@ class HCMNotificationConfig extends NotificationConfig {
 
   @override
   Future<NotificationMessage?> getInitialNotification() async {
-    final RemoteMessage? initialMessage = await Push.getInitialNotification();
+    final Map? initialMessage = await Push.getInitialNotification();
+    if (initialMessage != null) {
+      debugPrint(
+        "-----------initialMessage---------------------${initialMessage["extras"]}--------------------------------",
+      );
+    }
+    // final RemoteMessage? initialMessage = await Push.getInitialNotification();
 
     return initialMessage == null
         ? null
         : NotificationMessage(
-            data: initialMessage.dataOfMap,
-            title: initialMessage.notification?.title,
-            body: initialMessage.notification?.body,
+            data: 
+                 _convertToStringDynamicMap(initialMessage["extras"]),
           );
+  }
+
+  Map<String, dynamic>? _convertToStringDynamicMap(Map<Object?, Object?> map) {
+    final result = <String, dynamic>{};
+    map.forEach((key, value) {
+      if (key is String) {
+        result[key] = value;
+      }
+    });
+    return result;
   }
 
   @override
