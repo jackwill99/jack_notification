@@ -79,12 +79,12 @@ class FCMNotificationConfig extends NotificationConfig {
   void onMessageListen(void Function(NotificationMessage message) callBack) {
     FirebaseMessaging.onMessage.listen((message) {
       debugPrint(
-        "----------------------Firebase OnMessageListen----------------------",
+        "----------------------Firebase ----------------------",
       );
       callBack.call(
         NotificationMessage(
           data: message.data.isEmpty ? null : message.data,
-          title: message.notification?.title,
+          title:  message.notification?.title,
           body: message.notification?.body,
         ),
       );
